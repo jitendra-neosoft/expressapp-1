@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "mocha --recursive",
-    "start": "node server.js"
+    "start": "node server.js",
+    "start:windows": "set NODE_ENV=production && node server.js",
+    "start:linux": "export NODE_ENV=production && node server.js"
   },
   "repository": {
     "type": "git",
@@ -46,5 +48,8 @@
     "chai": "^4.1.1",
     "chai-http": "^3.0.0",
     "supertest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=6"
   }
 }
