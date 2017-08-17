@@ -8,7 +8,7 @@ module.exports.ensureAuth = function (req, res, next) {
 	if (!req.headers.authorization) {
 		return res.status(401).send({ message: 'Auth headers required' });
 	}
-	var token = req.headers.authorization.split(' ')[1];
+	let token = req.headers.authorization.split(' ')[1];
 	jwt.verify(token, config.SECRET, function (err, decoded) {
 		if (err) {
 			logger.error(err.stack);

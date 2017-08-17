@@ -8,7 +8,7 @@ module.exports.sendEmail = function (mailOptions) {
     service: 'gmail',
     auth: {
       user: config.MAIL.EMAIL_ID,
-      pass: config.MAIL.EMAIL_ID
+      pass: config.MAIL.EMAIL_PWD
     }
   });
 
