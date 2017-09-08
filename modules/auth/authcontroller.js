@@ -58,6 +58,7 @@ router.post('/auth/login', validateRequestForLogin, function (req, res) {
 					}
 					else {
 						let sendData = {};
+						sendData.token = createToken(foundUser);
 						sendData.userId = foundUser._id;
 						sendData.fistname = foundUser.fistname;
 						sendData.lastname = foundUser.lastname;
@@ -66,7 +67,6 @@ router.post('/auth/login', validateRequestForLogin, function (req, res) {
 							{
 								success: true, 
 								msg: 'Login successfull',
-								token: createToken(foundUser),
 								data: sendData
 							});
 					}
