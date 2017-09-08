@@ -1,11 +1,11 @@
 'use strict';
 
-const express = require('express'),
-  router = express.Router(),
-  multer = require('multer'),
-  logger = require('../../utils/logger'),
-  fs = require('fs'),
-  dir = '././uploads';
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const logger = require('../../utils/logger');
+const fs = require('fs');
+const dir = '././uploads';
 
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
@@ -26,7 +26,7 @@ router.post('/uploadImage', function (req, res) {
   upload(req, res, function (err) {
     if (err) {
       logger.error(err.stack);
-      return res.status(500).send({ status: 1, message: 'Internal Server Error' });
+      return res.status(500).send({ success: false, msg: 'Internal Server Error' });
     }
     else {
       let fileArray = [];
@@ -38,9 +38,9 @@ router.post('/uploadImage', function (req, res) {
       }
       catch (e) {
         logger.error(e.stack);
-        return res.status(500).send({ status: 1, message: 'Internal Server Error' });
+        return res.status(500).send({ success: false, msg: 'Internal Server Error' });
       }
-      return res.status(200).send({ status: 0, message: 'File is uploaded', data: fileArray });
+      return res.status(200).send({ success: true, msg: 'File is uploaded', data: fileArray });
     }
   });
 });

@@ -1,15 +1,16 @@
 'use strict';
 
-const express = require('express'),
-	router = express.Router(),
-	ensureAuth = require('../middleware/authmiddleware').ensureAuth,
-	User = require('../user/usermodel').User,
-	cache = require('../../utils/cache'),
-	logger = require('../../utils/logger');
+const express = require('express');
+const router = express.Router();
+const Joi = require('joi');
+const ensureAuth = require('../middleware/authmiddleware').ensureAuth;
+const User = require('../user/usermodel').User;
+const cache = require('../../utils/cache');
+const logger = require('../../utils/logger');
 
 router.get('/', function (req, res) {
 	ensureAuth(req, res, function (payload) {
-		return res.status(200).send({ message: 'I am authenticated', data: payload })
+		return res.status(200).send({ success: true, msg: 'I am authenticated', data: payload })
 	})
 });
 
@@ -24,13 +25,13 @@ router.get('/allusers', cache.cache(20), function (req, res) {
 	User.find().count(function (err, totalCount) {
 		if (err) {
 			logger.error(err.stack);
-			return res.status(500).send({ message: 'Internal Server Error' })
+			return res.status(500).send({ success: false, msg: 'Internal Server Error' })
 		}
 		else {
 			User.find().skip(skip).limit(limit).exec(function (err, allUsers) {
 				if (err) {
 					logger.error(err.stack);
-					return res.status(500).send({ message: 'Internal Server Error' })
+					return res.status(500).send({ success: false, msg: 'Internal Server Error' })
 				}
 				else {
 					let total = {}
@@ -41,7 +42,7 @@ router.get('/allusers', cache.cache(20), function (req, res) {
 					else {
 						total.pages = (parseInt(total.count / items_perpage) + 1);
 					}
-					return res.status(200).send({ message: 'All users', total: total, data: allUsers });
+					return res.status(200).send({ success: true, msg: 'All users', total: total, data: allUsers });
 				}
 			});
 		}	
@@ -51,7 +52,10 @@ router.get('/allusers', cache.cache(20), function (req, res) {
 
 router.get('/searchuser', function (req, res) {
 
-  let username = req.query.matchelement;
+	let username = req.query.matchelement;
+	if(!username){
+		return res.status(400).send({ success: false, msg: 'Bad Request' })
+	}
   let regexStr = username.split(/ /).join("|"); 
 
   User.find({
@@ -62,10 +66,10 @@ router.get('/searchuser', function (req, res) {
   }).limit(50).exec(function (err, result) {
     if (err) {
       logger.error(err.stack);
-      return res.status(500).send({ message: 'Internal Server Error' })
+      return res.status(500).send({ success: false, msg: 'Internal Server Error' })
     }
     else {
-      return res.status(200).send({ message: 'Search Users', data: result });
+      return res.status(200).send({ success: true, msg: 'Search Users', data: result });
     }
   })
 });

@@ -1,13 +1,13 @@
 'use strict';
 
-const express = require('express'),
-	router = express.Router(),
-	Joi = require('joi'),
-	User = require('../user/usermodel').User,
-	jwt = require('jsonwebtoken'),
-	config = require('../../config/config'),
-	ensureAuth = require('../middleware/authmiddleware').ensureAuth,
-	logger = require('../../utils/logger');
+const express = require('express');
+const router = express.Router();
+const Joi = require('joi');
+const User = require('../user/usermodel').User;
+const jwt = require('jsonwebtoken');
+const config = require('../../config/config');
+const ensureAuth = require('../middleware/authmiddleware').ensureAuth;
+const logger = require('../../utils/logger');
 
 const secret = config.SECRET;
 
@@ -36,11 +36,11 @@ router.post('/auth/signup', validateRequestForSignup, function (req, res) {
 			logger.error(err.stack);
 			if (err.code === 11000) {
         let field = err.message.match(/dup key: { : "(.+)" }/)[1];
-				return res.status(500).send({ message: `An account with email '${field}' already exists.` });
+				return res.status(500).send({ success: false, msg: `An account with email '${field}' already exists.` });
 			}
-			return res.status(500).send({ message: 'Internal Server Error' })
+			return res.status(500).send({ success: false, msg: 'Internal Server Error' })
 		}
-		return res.status(200).send({ message: 'Signup successfully' })
+		return res.status(200).send({ success: true, msg: 'Signup successfully' })
 	});
 });
 
@@ -48,13 +48,13 @@ router.post('/auth/login', validateRequestForLogin, function (req, res) {
 	User.findOne({ email: req.body.email.toLowerCase() }, '+password', function (err, foundUser) {
 		if (err) {
 			logger.error(err.stack);
-			return res.status(500).send({ message: 'Internal Server Error' })
+			return res.status(500).send({ success: false, msg: 'Internal Server Error' })
 		}
 		else {
 			if (foundUser) {
 				foundUser.comparePassword(req.body.password, function (err, isMatch) {
 					if (!isMatch) {
-						return res.status(200).send({ message: 'Wrong email and password' })
+						return res.status(200).send({ success: false, msg: 'Wrong email and password' })
 					}
 					else {
 						let sendData = {};
@@ -64,7 +64,8 @@ router.post('/auth/login', validateRequestForLogin, function (req, res) {
 						sendData.email = foundUser.email;
 						return res.status(200).send(
 							{
-								message: 'Login successfull',
+								success: true, 
+								msg: 'Login successfull',
 								token: createToken(foundUser),
 								data: sendData
 							});
@@ -72,7 +73,7 @@ router.post('/auth/login', validateRequestForLogin, function (req, res) {
 				})
 			}
 			else {
-				return res.status(200).send({ message: 'Wrong email and password' })
+				return res.status(200).send({ success: false, msg: 'Wrong email and password' })
 			}
 		}
 	})
@@ -83,13 +84,13 @@ router.post('/auth/logout', function (req, res) {
 		User.findById(payload.sub, function (err, existingUser) {
 			if (err) {
 				logger.error(err.stack);
-				return res.status(500).send({ message: 'Internal Server Error' })
+				return res.status(500).send({ success: false, msg: 'Internal Server Error' })
 			}
 			else {
 				if (existingUser) {
-					return res.status(200).send({ message: 'logged Out', token: invalidateToken(existingUser) });
+					return res.status(200).send({ success: true, msg: 'logged Out', token: invalidateToken(existingUser) });
 				}
-				return res.status(200).send({ message: 'Not a user' });
+				return res.status(200).send({ success: true, msg: 'Not a user' });
 			}
 		})
 	})
@@ -108,7 +109,7 @@ function validateRequestForSignup(req, res, next) {
 	Joi.validate(req.body, signupSchema, function (err, value) {
 		if (err) {
 			logger.error(err.stack);
-			return res.status(400).send({ message: 'Bad Request', error: err })
+			return res.status(400).send({ success: false, msg: 'Bad Request', error: err })
 		}
 		next();
 	});
@@ -123,7 +124,7 @@ function validateRequestForLogin(req, res, next) {
 	Joi.validate(req.body, loginSchema, function (err, value) {
 		if (err) {
 			logger.error(err.stack);
-			return res.status(400).send({ message: 'Bad Request', error: err })
+			return res.status(400).send({ success: false, msg: 'Bad Request', error: err })
 		}
 		next();
 	});
