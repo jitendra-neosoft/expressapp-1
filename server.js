@@ -1,16 +1,16 @@
 'use strict';
 
-var express = require('express'),
-  app = express(),
-  mongoose = require('mongoose'),
-  config = require('./config/config'),
-  bodyParser = require('body-parser'),
-  compression = require('compression'),
-  helmet = require('helmet'),
-  fs = require('fs'),
-  path = require('path'),
-  morgan = require('morgan'),
-  mail = require('./utils/mail');
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+const config = require('./config/config');
+const bodyParser = require('body-parser');
+const compression = require('compression');
+const helmet = require('helmet');
+const fs = require('fs');
+const path = require('path');
+const morgan = require('morgan');
+const mail = require('./utils/mail');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(config.MONGO_URI);
@@ -24,10 +24,12 @@ app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(function (req, res, next) {
-  var protocol = req.get('x-forwarded-proto');
-  protocol == 'https' ? next() : res.redirect('https://' + req.hostname + req.url);
-});
+if (app.get('env') === 'production') {
+  app.use(function (req, res, next) {
+    var protocol = req.get('x-forwarded-proto');
+    protocol == 'https' ? next() : res.redirect('https://' + req.hostname + req.url);
+  });
+}
 
 // importing all modules
 app.use(require('./modules/auth/authcontroller'));
