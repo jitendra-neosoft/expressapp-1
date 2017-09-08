@@ -24,6 +24,11 @@ app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.use(function (req, res, next) {
+  var protocol = req.get('x-forwarded-proto');
+  protocol == 'https' ? next() : res.redirect('https://' + req.hostname + req.url);
+});
+
 // importing all modules
 app.use(require('./modules/auth/authcontroller'));
 app.use(require('./modules/user/usercontroller'));
