@@ -23,3 +23,33 @@ EMAIL_PWD = example
 ```sh
 npm start
 ```
+
+### *API Available*
+
+###### *Signup User*
+
+	POST: http://localhost:3003/auth/signup
+
+	{
+		"firstname": "Jitendra",
+		"lastname": "Kumar",
+		"email": "contactjittu@gmail.com",
+    "password":"123"
+	}
+  
+###### *Login User*
+
+	POST: http://localhost:3003/auth/login
+
+	{
+		"email": "contactjittu@gmail.com",
+		"password": "123"
+	}
+
+###### *Search Users*
+
+	GET: http://localhost:3003/searchuser?matchelement=jitendra
+  
+###### *Get all Users*
+
+	GET: http://localhost:3003/allusers?itemsperpage=10&page=1
