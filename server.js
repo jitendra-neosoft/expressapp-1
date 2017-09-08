@@ -36,6 +36,10 @@ app.use(require('./modules/auth/authcontroller'));
 app.use(require('./modules/user/usercontroller'));
 app.use(require('./modules/fileupload/fileuploadcontroller'));
 
+app.use(function(req, res) {
+  return res.status(404).send({ success: false, msg: 'API not found' })
+});
+
 // this route is only for upload file testing using html code use uploadImage api to upload file
 app.get('/upload', function (req, res) {
   res.sendFile(__dirname + '/partials/index.html');
