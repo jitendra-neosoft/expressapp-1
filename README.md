@@ -46,6 +46,20 @@ npm start
 		"password": "123"
 	}
 
+###### *Update User info*
+
+	POST: http://localhost:3003/updateProfile
+
+	{
+		"firstname": "Jitendra",
+		"lastname": "Kumar",
+		"profile_image": "base64Image"
+	}
+
+###### *Get User profile*
+
+	GET: http://localhost:3003/profile
+
 ###### *Search Users*
 
 	GET: http://localhost:3003/searchuser?matchelement=jitendra
