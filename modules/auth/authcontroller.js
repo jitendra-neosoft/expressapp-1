@@ -63,6 +63,7 @@ router.post('/auth/login', validateRequestForLogin, function (req, res) {
 						sendData.fistname = foundUser.fistname;
 						sendData.lastname = foundUser.lastname;
 						sendData.email = foundUser.email;
+						sendData.profile_image = foundUser.profile_image;
 						return res.status(200).send(
 							{
 								success: true, 
