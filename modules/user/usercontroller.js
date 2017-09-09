@@ -22,7 +22,7 @@ router.get('/allusers', cache.cache(20), function (req, res) {
 			return res.status(500).send({ success: false, msg: 'Internal Server Error' })
 		}
 		else {
-			User.find().skip(skip).limit(limit).exec(function (err, allUsers) {
+			User.find({},{ "firstname":1, "lastname": 1, "email": 1} ).skip(skip).limit(limit).exec(function (err, allUsers) {
 				if (err) {
 					logger.error(err.stack);
 					return res.status(500).send({ success: false, msg: 'Internal Server Error' })
@@ -57,7 +57,7 @@ router.get('/searchuser', function (req, res) {
         { "firstname": { "$regex": regexStr, "$options": 'i' } },
         { "lastname": { "$regex": regexStr, "$options": 'i' }}
     ]
-  }).limit(50).exec(function (err, result) {
+  },{ "firstname":1, "lastname": 1, "email": 1 } ).limit(50).exec(function (err, result) {
     if (err) {
       logger.error(err.stack);
       return res.status(500).send({ success: false, msg: 'Internal Server Error' })
@@ -91,6 +91,25 @@ router.post('/updateProfile', validateUpdateUserData, function (req, res) {
 	});
 
 });
+
+router.get('/profile', function (req, res) {
+	
+		ensureAuth(req, res, function (payload) {
+	
+			let userId = payload.sub;
+	
+			User.findById(userId, function (err, foundUser) {
+				if (err) {
+					logger.error(err.stack);
+					return res.status(500).send({ success: false, msg: 'Internal Server Error' })
+				}
+				else {
+					return res.status(200).send({ success: true, msg: 'Found User', data: foundUser });
+				}
+			})
+		});
+	
+	});
 
 module.exports = router;
 
