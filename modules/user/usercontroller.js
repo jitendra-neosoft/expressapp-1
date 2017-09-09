@@ -8,12 +8,6 @@ const User = require('../user/usermodel').User;
 const cache = require('../../utils/cache');
 const logger = require('../../utils/logger');
 
-router.get('/', function (req, res) {
-	ensureAuth(req, res, function (payload) {
-		return res.status(200).send({ success: true, msg: 'I am authenticated', data: payload })
-	})
-});
-
 router.get('/allusers', cache.cache(20), function (req, res) {
 
 	let items_perpage = req.query.itemsperpage || 5;
@@ -74,4 +68,44 @@ router.get('/searchuser', function (req, res) {
   })
 });
 
+router.post('/updateProfile', validateUpdateUserData, function (req, res) {
+
+	ensureAuth(req, res, function (payload) {
+
+		let userId = payload.sub;
+		let firstname = req.body.firstname;
+		let lastname = req.body.lastname;
+		let profile_image = req.body.profile_image;
+
+		User.findByIdAndUpdate(userId, { $set: { 
+			'firstname': firstname, 'lastname': lastname, profile_image: profile_image } 
+		}, { new: true }, function (err, updated) {
+			if (err) {
+				logger.error(err.stack);
+				return res.status(500).send({ success: false, msg: 'Internal Server Error' })
+			}
+			else {
+				return res.status(200).send({ success: true, msg: 'User data updated', data: updated });
+			}
+		})
+	});
+
+});
+
 module.exports = router;
+
+function validateUpdateUserData(req, res, next) {
+	let userSchema = Joi.object().keys({
+		firstname: Joi.string().min(3).max(30).required(),
+		lastname: Joi.string().min(3).max(30).required(),
+		profile_image: Joi.string().required(),
+	});
+
+	Joi.validate(req.body, userSchema, function (err, value) {
+		if (err) {
+			logger.error(err.stack);
+			return res.status(400).send({ success: false, msg: 'Bad Request', error: err })
+		}
+		next();
+	});
+}

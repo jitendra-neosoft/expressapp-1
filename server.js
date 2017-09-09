@@ -21,8 +21,8 @@ app.set('port', config.PORT);
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(compression());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
+app.use(bodyParser.json({limit: '50mb'}));
 
 if (app.get('env') === 'production') {
   app.use(function (req, res, next) {

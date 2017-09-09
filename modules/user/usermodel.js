@@ -8,6 +8,7 @@ var userSchema = new Schema({
   firstname: { type: String, required: true },
   lastname: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true },
+  profile_image: { type: String },
   password: { type: String, select: false }
 });
 
