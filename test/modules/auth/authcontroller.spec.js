@@ -5,18 +5,18 @@ var expect = chai.expect;
 var request = require('supertest');
 var app = require('../../../server');
 
-describe('/Get all users', function() {
+describe('/Login API', function() {
   this.timeout(25000);
-  it('it should have user data', function(done){
+  it('it should have token', function(done){
     request(app)
-    .get('/allusers')
-    .send({'itemsperpage':5,'page':1})
+    .post('/auth/login')
+    .send({'email':'contactjittu@gmail.com','password':'123'})
     .expect(200)
     .end(function(err, res) {
       if (err) {
         return done(err);
       }
-      expect(res.body.data).to.be.an('array')
+      expect(res.body.data.email).to.equal('contactjittu@gmail.com');
       done();
     });
   });

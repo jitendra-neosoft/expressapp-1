@@ -9,6 +9,8 @@ describe('user', function () {
   it('should be invalid if email is empty', function (done) {
     var newUser = new user();
     newUser.email = 'contactjittu@gmail.com';  
+    newUser.firstname = 'Jitendra';
+    newUser.lastname = 'Kumar';
     newUser.validate(function (err) {
       if (err) {
         return done(err);
