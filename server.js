@@ -10,7 +10,7 @@ const helmet = require('helmet');
 const fs = require('fs');
 const path = require('path');
 const morgan = require('morgan');
-const os = require("os");
+const cors = require("cors");
 const mail = require('./utils/mail');
 
 mongoose.Promise = global.Promise;
@@ -19,6 +19,7 @@ mongoose.connect(config.MONGO_URI);
 app.set('env', config.NODE_ENV);
 app.set('port', config.PORT);
 
+app.use(cors());
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(compression());
