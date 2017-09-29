@@ -9,7 +9,7 @@ const cache = require('../../utils/cache');
 const logger = require('../../utils/logger');
 
 router.get('/allusers', cache.cache(20), function (req, res) {
-
+	console.log('Ip address of client = ',req.ip);
 	let items_perpage = req.query.itemsperpage || 5;
 	let page = req.query.page || 1;
 
